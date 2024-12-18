@@ -1,0 +1,45 @@
+﻿<?xml version="1.0"?>
+<activation_energies>
+	<icache Read="7.91631e-10" Write="1.21105e-09" Search="0"/>
+	<icacheMissBuffer Read="3.11771e-10" Write="3.09428e-10" Search="3.01706e-10"/>
+	<icacheFillBuffer Read="1.8575e-10" Write="1.84001e-10" Search="1.90577e-10"/>
+	<icacheprefetchBuffer Read="1.8575e-10" Write="1.84001e-10" Search="1.90577e-10"/>
+	<InstBuffer Read="1.22269e-10" Write="1.34162e-10" Search="0"/>
+	<BTB Read="4.57473e-10" Write="1.72846e-09" Search="0"/>
+	<GlobalPred Read="6.88159e-11" Write="5.11783e-11" Search="0"/>
+	<L1Pred Read="2.52823e-11" Write="3.39734e-11" Search="0"/>
+	<L2Pred Read="1.2907e-11" Write="1.72525e-11" Search="0"/>
+	<PredChooser Read="6.88159e-11" Write="5.11783e-11" Search="0"/>
+	<RAS Read="2.40927e-11" Write="3.54047e-11" Search="0"/>
+	<IDInst Read="2.82872e-10" Write="0" Search="0"/>
+	<IDOp Read="2.82666e-10" Write="0" Search="0"/>
+	<IDMisc Read="2.83179e-10" Write="0" Search="0"/>
+	<dcache Read="2.57829e-09" Write="3.57454e-09" Search="0"/>
+	<dcacheMissBuffer Read="5.48321e-10" Write="5.49574e-10" Search="4.86491e-10"/>
+	<dcacheFillBuffer Read="3.17738e-10" Write="3.18674e-10" Search="2.85031e-10"/>
+	<dcacheprefetchBuffer Read="3.17738e-10" Write="3.18674e-10" Search="2.85031e-10"/>
+	<LoadStoreQueue Read="2.58236e-10" Write="2.69386e-10" Search="2.49341e-10"/>
+	<LoadQueue Read="2.58236e-10" Write="2.69386e-10" Search="2.49341e-10"/>
+	<ITLB Read="4.87346e-10" Write="4.9169e-10" Search="9.86668e-10"/>
+	<DTLB Read="5.47887e-10" Write="5.68123e-10" Search="8.3815e-10"/>
+	<IntRegFile Read="1.11931e-10" Write="1.83671e-10" Search="0"/>
+	<FPRegFile Read="8.38623e-11" Write="1.30892e-10" Search="0"/>
+	<InstIssueQueue Read="2.72718e-11" Write="3.26473e-11" Search="6.24561e-11"/>
+	<FPIssueQueue Read="5.08418e-11" Write="5.10149e-11" Search="6.37153e-11"/>
+	<ReorderBuffer Read="1.13619e-10" Write="1.74166e-10" Search="0"/>
+	<Int_FrontRAT Read="2.81309e-11" Write="4.18534e-11" Search="1.20223e-10"/>
+	<FP_FrontRAT Read="1.77839e-11" Write="2.51832e-11" Search="8.69199e-11"/>
+	<Int_Free_List Read="6.31062e-12" Write="1.3167e-11" Search="0"/>
+	<FP_Free_List Read="5.17501e-12" Write="9.76372e-12" Search="0"/>
+	<IntAlu Read="8.49741e-10"/>
+	<FpAlu Read="2.54922e-09"/>
+	<L2cache Read="2.20574e-09" Write="3.35332e-09" Search="0"/>
+	<L2MissB Read="1.22836e-10" Write="1.21459e-10" Search="1.37046e-10"/>
+	<L2FillB Read="1.8575e-10" Write="1.84001e-10" Search="1.90577e-10"/>
+	<L2PrefetchB Read="1.8575e-10" Write="1.84001e-10" Search="1.90577e-10"/>
+	<L2WBB Read="1.8575e-10" Write="1.84001e-10" Search="1.90577e-10"/>
+	<Second_Level_Directorycache Read="2.59628e-10" Write="2.62432e-10" Search="6.8883e-10"/>
+	<MC_ReorderBuffer Read="2.18539e-10" Write="2.28701e-10" Search="2.27487e-10"/>
+	<MC_ReadBuffer Read="1.69163e-11" Write="2.76468e-11" Search="0"/>
+	<MC_writeBuffer Read="1.69163e-11" Write="2.76468e-11" Search="0"/>
+</activation_energies>

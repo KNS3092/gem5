@@ -1,0 +1,215 @@
+# O3CPU Power Analysis Results
+
+
+==================================================
+Simulation Section 1
+==================================================
+
+## Individual Component Power Consumption (Watts)
+icache_tag: 4.864903e-03 W
+icache_data: 1.141150e-01 W
+bp_lookups: 2.116178e-02 W
+bp_squashes: 8.154619e-03 W
+btb_lookups: 1.405659e-01 W
+btb_updates: 3.050465e-03 W
+ras_used: 6.637097e-04 W
+ras_pushes: 3.073456e-03 W
+decoded_instructions: 6.899684e-01 W
+rename_int_lookups: 1.567150e-02 W
+rename_fp_lookups: 6.076988e-04 W
+rename_int_writes: 1.157199e-02 W
+rename_fp_writes: 4.610520e-04 W
+float_mem_read: 5.123097e-05 W
+float_mem_write: 2.706077e-03 W
+mem_read: 2.215791e-02 W
+mem_write: 2.250825e-02 W
+load_store_forwLoads: 4.828367e-03 W
+load_store_rescheduledLoads: 0.000000e+00 W
+load_store_write: 1.357801e-01 W
+int_alu: 1.242452e+00 W
+int_mult: 1.128319e-05 W
+int_div: 1.015487e-04 W
+float_add: 9.661228e-02 W
+float_cmp: 0.000000e+00 W
+float_cvt: 0.000000e+00 W
+float_mult: 0.000000e+00 W
+float_mult_acc: 0.000000e+00 W
+float_div: 0.000000e+00 W
+float_misc: 0.000000e+00 W
+float_sqrt: 0.000000e+00 W
+rob_reads: 3.724135e-01 W
+rob_writes: 8.367941e-01 W
+dcache_tag: 5.679405e-03 W
+dcache_data: 1.332206e-01 W
+l2cache_tag: 2.122487e-03 W
+l2cache_data: 4.109496e-02 W
+
+## Grouped Power Consumption (Watts)
+
+Fetch Total: 2.956499e-01 W
+  Icache: 1.189799e-01 W
+  Branch Predictor: 2.931640e-02 W
+  Branch Target Buffer: 1.436164e-01 W
+  Return Address Stack: 3.737166e-03 W
+
+Decode Total: 6.899684e-01 W
+  InstructionDecode: 6.899684e-01 W
+
+Rename Total: 2.831224e-02 W
+  FreeList: 2.831224e-02 W
+
+Issue Execute Writeback Total: 2.875316e+00 W
+  Register File: 4.742347e-02 W
+  Load Store Queue Read: 4.828367e-03 W
+  Load Store Queue Write: 1.357801e-01 W
+  Integer Operations: 1.242565e+00 W
+  Floating Point Operations: 9.661228e-02 W
+  ROB: 1.209208e+00 W
+  Dcache: 1.389000e-01 W
+
+L2Cache Total: 4.321744e-02 W
+  L2: 4.321744e-02 W
+
+Total System Power Consumption: 3.932464e+00 W
+
+==================================================
+Simulation Section 2
+==================================================
+
+## Individual Component Power Consumption (Watts)
+icache_tag: 3.812554e-03 W
+icache_data: 8.943029e-02 W
+bp_lookups: 6.758781e-03 W
+bp_squashes: 2.803810e-05 W
+btb_lookups: 4.489481e-02 W
+btb_updates: 1.235714e-04 W
+ras_used: 5.738095e-07 W
+ras_pushes: 7.585714e-06 W
+decoded_instructions: 5.817739e-01 W
+rename_int_lookups: 1.665870e-02 W
+rename_fp_lookups: 0.000000e+00 W
+rename_int_writes: 2.188906e-02 W
+rename_fp_writes: 0.000000e+00 W
+float_mem_read: 0.000000e+00 W
+float_mem_write: 0.000000e+00 W
+mem_read: 6.562400e-02 W
+mem_write: 3.594571e-02 W
+load_store_forwLoads: 1.007183e-01 W
+load_store_rescheduledLoads: 0.000000e+00 W
+load_store_write: 2.102491e-01 W
+int_alu: 9.967667e-01 W
+int_mult: 8.289524e-02 W
+int_div: 0.000000e+00 W
+float_add: 0.000000e+00 W
+float_cmp: 0.000000e+00 W
+float_cvt: 0.000000e+00 W
+float_mult: 0.000000e+00 W
+float_mult_acc: 0.000000e+00 W
+float_div: 0.000000e+00 W
+float_misc: 0.000000e+00 W
+float_sqrt: 0.000000e+00 W
+rob_reads: 3.550829e-01 W
+rob_writes: 7.141913e-01 W
+dcache_tag: 7.647326e-03 W
+dcache_data: 1.793817e-01 W
+l2cache_tag: 5.165524e-03 W
+l2cache_data: 1.000133e-01 W
+
+## Grouped Power Consumption (Watts)
+
+Fetch Total: 1.450562e-01 W
+  Icache: 9.324284e-02 W
+  Branch Predictor: 6.786819e-03 W
+  Branch Target Buffer: 4.501838e-02 W
+  Return Address Stack: 8.159524e-06 W
+
+Decode Total: 5.817739e-01 W
+  InstructionDecode: 5.817739e-01 W
+
+Rename Total: 3.854776e-02 W
+  FreeList: 3.854776e-02 W
+
+Issue Execute Writeback Total: 2.748502e+00 W
+  Register File: 1.015697e-01 W
+  Load Store Queue Read: 1.007183e-01 W
+  Load Store Queue Write: 2.102491e-01 W
+  Integer Operations: 1.079662e+00 W
+  Floating Point Operations: 0.000000e+00 W
+  ROB: 1.069274e+00 W
+  Dcache: 1.870290e-01 W
+
+L2Cache Total: 1.051789e-01 W
+  L2: 1.051789e-01 W
+
+Total System Power Consumption: 3.619059e+00 W
+
+==================================================
+Simulation Section 3
+==================================================
+
+## Individual Component Power Consumption (Watts)
+icache_tag: 2.284200e-04 W
+icache_data: 5.358000e-03 W
+bp_lookups: 5.908497e-03 W
+bp_squashes: 4.660966e-04 W
+btb_lookups: 3.924684e-02 W
+btb_updates: 4.503966e-03 W
+ras_used: 1.537414e-05 W
+ras_pushes: 7.934483e-05 W
+decoded_instructions: 3.538232e-01 W
+rename_int_lookups: 9.256444e-03 W
+rename_fp_lookups: 1.857655e-05 W
+rename_int_writes: 1.171568e-02 W
+rename_fp_writes: 1.194759e-05 W
+float_mem_read: 2.169828e-05 W
+float_mem_write: 9.937931e-05 W
+mem_read: 4.072166e-02 W
+mem_write: 2.720979e-02 W
+load_store_forwLoads: 3.664490e-02 W
+load_store_rescheduledLoads: 0.000000e+00 W
+load_store_write: 1.389663e-01 W
+int_alu: 6.006276e-01 W
+int_mult: 7.327586e-05 W
+int_div: 1.172414e-04 W
+float_add: 9.672414e-04 W
+float_cmp: 0.000000e+00 W
+float_cvt: 0.000000e+00 W
+float_mult: 0.000000e+00 W
+float_mult_acc: 0.000000e+00 W
+float_div: 0.000000e+00 W
+float_misc: 0.000000e+00 W
+float_sqrt: 0.000000e+00 W
+rob_reads: 2.574454e-01 W
+rob_writes: 4.311180e-01 W
+dcache_tag: 7.162802e-03 W
+dcache_data: 1.680163e-01 W
+l2cache_tag: 4.207310e-03 W
+l2cache_data: 8.146069e-02 W
+
+## Grouped Power Consumption (Watts)
+
+Fetch Total: 5.580654e-02 W
+  Icache: 5.586420e-03 W
+  Branch Predictor: 6.374593e-03 W
+  Branch Target Buffer: 4.375081e-02 W
+  Return Address Stack: 9.471897e-05 W
+
+Decode Total: 3.538232e-01 W
+  InstructionDecode: 3.538232e-01 W
+
+Rename Total: 2.100265e-02 W
+  FreeList: 2.100265e-02 W
+
+Issue Execute Writeback Total: 1.709192e+00 W
+  Register File: 6.805253e-02 W
+  Load Store Queue Read: 3.664490e-02 W
+  Load Store Queue Write: 1.389663e-01 W
+  Integer Operations: 6.008181e-01 W
+  Floating Point Operations: 9.672414e-04 W
+  ROB: 6.885634e-01 W
+  Dcache: 1.751791e-01 W
+
+L2Cache Total: 8.566800e-02 W
+  L2: 8.566800e-02 W
+
+Total System Power Consumption: 2.225492e+00 W

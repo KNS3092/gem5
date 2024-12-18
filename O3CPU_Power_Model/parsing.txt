@@ -1,0 +1,66 @@
+system.cpu.branchPred.BTBLookups               125994                       # Number of BTB lookups (Count)   BTB read
+system.cpu.branchPred.BTBUpdates                 6001                       # Number of BTB updates (Count)   BTB write
+system.cpu.branchPred.lookups_0::total         125994                       # Number of BP lookups (Count)    Global predictor read
+system.cpu.branchPred.squashes_0::total         39557                       # Number of branches that got squashed (completely removed) as an earlier branch was mispredicted. (Count) Global Predictor Write
+system.cpu.branchPred.ras.used                    283                       # Number of times the RAS is the provider (Count) RAS read
+system.cpu.branchPred.ras.pushes                 1090                       # Number of times a PC was pushed onto the RAS (Count) RAS write
+system.cpu.statIssuedInstType_0::FloatMemRead        28992      2.06%     99.08% # Number of instructions issued per FU type, per thread (Count)  FPRegFile read
+system.cpu.statIssuedInstType_0::FloatMemWrite        12943      0.92%    100.00% # Number of instructions issued per FU type, per thread (Count) FPRegfile write
+system.cpu.statIssuedInstType_0::MemRead        73497      5.22%     94.14% # Number of instructions issued per FU type, per thread (Count)    IntRegFile read
+system.cpu.statIssuedInstType_0::MemWrite        40474      2.88%     97.02% # Number of instructions issued per FU type, per thread (Count)    IntRegFile write
+system.cpu.rob.reads                          1835775                       # The number of ROB reads (Count)                                   ROB read
+system.cpu.rob.writes                         3043995                       # The number of ROB writes (Count)                                  ROB write
+system.cpu.rename.intLookups                  1785485                       # Number of integer rename lookups (Count)      IntFreeListRead
+system.cpu.rename.fpLookups                    338922                       # Number of floating rename lookups (Count)     FPFreeListRead
+system.cpu.rename.intWrites             3464220                       # count of registers freed and written back to integer free list (Count) IntFreeListWrite
+system.cpu.rename.fpWrites               631765                       # count of registers freed and written back to floating point free list (Count)FPFreeListWrite
+
+
+system.cpu.statIssuedInstType_0::IntAlu       1100789     78.24%     78.31% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::IntMult          641      0.05%     78.35% # Number of instructions issued per FU type, per thread (Count) IntALURead
+system.cpu.statIssuedInstType_0::IntDiv           116      0.01%     78.36% # Number of instructions issued per FU type, per thread (Count)
+
+
+
+system.cpu.statIssuedInstType_0::FloatAdd         4388      0.31%     78.67% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::FloatCmp            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::FloatCvt            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::FloatMult            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count) 
+system.cpu.statIssuedInstType_0::FloatMultAcc            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count) FP ALu read
+system.cpu.statIssuedInstType_0::FloatDiv            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::FloatMisc            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count)
+system.cpu.statIssuedInstType_0::FloatSqrt            0      0.00%     78.67% # Number of instructions issued per FU type, per thread (Count)
+
+
+
+
+system.cpu.decode.decodedInsts                1621071                       # Number of instructions handled by decode (Count)      IDOp
+
+
+
+system.cpu.icache.demandHits::total            549303                       # number of demand (read+write) hits (Count)
+system.cpu.icache.demandMisses::total            1149                       # number of demand (read+write) misses (Count)
+system.cpu.icache.ReadReq.hits::total          120710                       # number of ReadReq hits (Count) 
+system.cpu.icache.ReadReq.misses::total          1149                       # number of ReadReq misses (Count)
+system.cpu.icache.tags.tagAccesses            1101796                       # Number of tag accesses (Count)
+system.cpu.icache.tags.dataAccesses           1101796                       # Number of data accesses (Count)
+
+system.cpu.dcache.ReadReq.hits::total           97011                       # number of ReadReq hits (Count) 
+system.cpu.dcache.WriteReq.hits::total          47500                       # number of WriteReq hits (Count) 
+system.cpu.dcache.ReadReq.misses::total          1032                       # number of ReadReq misses (Count)
+system.cpu.dcache.WriteReq.misses::total         1401                       # number of WriteReq misses (Count)
+system.cpu.dcache.tags.tagAccesses            2623984                       # Number of tag accesses (Count)
+system.cpu.dcache.tags.dataAccesses           2623984                       # Number of data accesses (Count)
+
+system.l2cache.overallHits::total                 448                       # number of overall hits (Count)
+system.l2cache.overallMisses::total              2297                       # number of overall misses (Count)
+system.l2cache.tags.tagAccesses                 33171                       # Number of tag accesses (Count)
+system.l2cache.tags.dataAccesses                33171                       # Number of data accesses (Count)
+
+system.cpu.lsq0.forwLoads                      755668                       # Number of loads that had data forwarded from stores (Count) LoadStoreQueue_read
+system.cpu.lsq0.rescheduledLoads                    0                       # Number of loads that were rescheduled (Count)
+
+simSeconds                                   0.003151                       # Number of seconds simulated (Second)
+
+
+

@@ -1,0 +1,69 @@
+# O3CPU Power Analysis Results
+
+
+## Individual Component Power Consumption (Watts)
+icache_tag: 3.286242e-03 W
+icache_data: 7.708469e-02 W
+bp_lookups: 9.146909e-03 W
+bp_squashes: 9.907735e-04 W
+btb_lookups: 6.075781e-02 W
+btb_updates: 3.924776e-03 W
+ras_used: 7.471144e-04 W
+ras_pushes: 1.123416e-03 W
+decoded_instructions: 5.594765e-01 W
+rename_int_lookups: 1.336689e-02 W
+rename_fp_lookups: 1.200699e-03 W
+rename_int_writes: 1.444038e-02 W
+rename_fp_writes: 1.986903e-03 W
+float_mem_read: 4.328889e-03 W
+float_mem_write: 3.900750e-03 W
+mem_read: 4.359876e-02 W
+mem_write: 3.557352e-02 W
+load_store_forwLoads: 6.048829e-02 W
+load_store_rescheduledLoads: 6.161194e-07 W
+load_store_write: 1.852623e-01 W
+int_alu: 8.512123e-01 W
+int_mult: 9.616418e-04 W
+int_div: 5.023881e-05 W
+float_add: 1.688922e-01 W
+float_cmp: 0.000000e+00 W
+float_cvt: 1.247140e-02 W
+float_mult: 1.247140e-02 W
+float_mult_acc: 0.000000e+00 W
+float_div: 0.000000e+00 W
+float_misc: 0.000000e+00 W
+float_sqrt: 0.000000e+00 W
+rob_reads: 3.389575e-01 W
+rob_writes: 6.800238e-01 W
+dcache_tag: 8.126947e-03 W
+dcache_data: 1.906321e-01 W
+l2cache_tag: 1.080467e-03 W
+l2cache_data: 2.091968e-02 W
+
+## Grouped Power Consumption (Watts)
+
+Fetch Total: 1.570617e-01 W
+  Icache: 8.037093e-02 W
+  Branch Predictor: 1.013768e-02 W
+  Branch Target Buffer: 6.468259e-02 W
+  Return Address Stack: 1.870531e-03 W
+
+Decode Total: 5.594765e-01 W
+  InstructionDecode: 5.594765e-01 W
+
+Rename Total: 3.099487e-02 W
+  FreeList: 3.099487e-02 W
+
+Issue Execute Writeback Total: 2.596953e+00 W
+  Register File: 8.740191e-02 W
+  Load Store Queue Read: 6.048891e-02 W
+  Load Store Queue Write: 1.852623e-01 W
+  Integer Operations: 8.522242e-01 W
+  Floating Point Operations: 1.938350e-01 W
+  ROB: 1.018981e+00 W
+  Dcache: 1.987590e-01 W
+
+L2Cache Total: 2.200014e-02 W
+  L2: 2.200014e-02 W
+
+Total System Power Consumption: 3.366486e+00 W
