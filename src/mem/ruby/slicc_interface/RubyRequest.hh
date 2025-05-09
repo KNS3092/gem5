@@ -85,6 +85,8 @@ class RubyRequest : public Message
     bool m_isGLCSet;
     bool m_isSLCSet;
     bool m_isSecure;
+    int  m_IntData; // Added for COUP
+
 
     RubyRequest(Tick curTime, int block_size, RubySystem *rs,
         uint64_t _paddr, int _len,
@@ -243,6 +245,9 @@ class RubyRequest : public Message
     const int& getSize() const { return m_Size; }
     const PrefetchBit& getPrefetch() const { return m_Prefetch; }
     RequestPtr getRequestPtr() const { return m_pkt->req; }
+    int getIntData() const { return m_IntData; } // Added for COUP
+    void setIntData(int val) { m_IntData = val; } // Added for COUP
+
 
     void setWriteMask(uint32_t offset, uint32_t len,
         std::vector< std::pair<int,AtomicOpFunctor*>> atomicOps);

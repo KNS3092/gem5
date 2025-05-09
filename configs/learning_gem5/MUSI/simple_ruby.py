@@ -84,7 +84,7 @@ thispath = os.path.dirname(os.path.realpath(__file__))
 binary = os.path.join(
     thispath,
     "../../../",
-    "tests/test-progs/threads/bin/x86/linux/threads",
+    "tests/test-progs/MUSI/counter",
 )
 
 # Create a process for a simple "multi-threaded" application

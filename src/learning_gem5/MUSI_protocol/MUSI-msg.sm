@@ -46,11 +46,18 @@ enumeration(CoherenceRequestType, desc="Types of request messages") {
     // "Requests" from the directory to the caches on the fwd network
     Inv,        desc="Probe the cache and invalidate any matching blocks";
     PutAck,     desc="The put request has been processed.";
+
+    // COUP additions
+    CoUp,       desc="Commutative update request";
 }
 
 enumeration(CoherenceResponseType, desc="Types of response messages") {
     Data,       desc="Contains the most up-to-date data";
     InvAck,     desc="Message from another cache that they have inv. the blk";
+
+    // COUP additions
+    PartialReduce, desc="Reduction sent on U eviction";
+
 }
 
 structure(RequestMsg, desc="Used for Cache->Dir and Fwd messages",
@@ -61,6 +68,7 @@ structure(RequestMsg, desc="Used for Cache->Dir and Fwd messages",
     CoherenceRequestType Type,   desc="Type of request";
     MachineID Requestor,         desc="Node who initiated the request";
     NetDest Destination,         desc="Multicast destination mask";
+    int IntData,                 desc="CoUp or reduction value";  // COUP addition
     DataBlock DataBlk,           desc="data for the cache line";
     // NOTE: You *must* use MessageSize as the name of this variable, and it's
     // required that you have a MessageSize for each type of message. You will
@@ -86,6 +94,7 @@ structure(ResponseMsg, desc="Used for Cache->Dir and Fwd messages",
     CoherenceResponseType Type,  desc="Type of response";
     MachineID Sender,            desc="Node who is responding to the request";
     NetDest Destination,         desc="Multicast destination mask";
+    int IntData,                 desc="CoUp or reduction value";  // COUP addition
     DataBlock DataBlk,           desc="data for the cache line";
     MessageSizeType MessageSize, desc="size category of the message";
     int Acks,                    desc="Number of acks required from others";

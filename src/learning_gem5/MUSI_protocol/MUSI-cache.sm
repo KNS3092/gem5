@@ -41,7 +41,7 @@
  */
 
 /// Declare a machine with type L1Cache.
-machine(MachineType:L1Cache, "MSI cache")
+machine(MachineType:L1Cache, "MUSI cache")
     : Sequencer *sequencer; // Incoming request from CPU come from this
       CacheMemory *cacheMemory; // This stores the data and cache states
       bool send_evictions; // Needed to support O3 CPU and mwait
@@ -70,6 +70,7 @@ machine(MachineType:L1Cache, "MSI cache")
 
       // This is all of the incoming requests from the core via the sequencer
       MessageBuffer * mandatoryQueue;
+
 {
     // Declare the states that this cache will use. These are both stable
     // states (no underscore) and transient states (with underscore). Letters
@@ -112,6 +113,15 @@ machine(MachineType:L1Cache, "MSI cache")
         II_A,   AccessPermission:Invalid,
                     desc="Sent valid data before receiving put ack. ";
                          //"Waiting for put ack.";
+        
+        // States for COUP 
+        U,      AccessPermission:Read_Only,
+                    desc="Update-only state. Cache holds commutative updates";
+        IU_D,   AccessPermission:Busy,
+                    desc="Invalid → Update. Waiting for CUP response";
+        IU_A,   AccessPermission:Busy,
+                    desc="Evicting update-only block, waiting for ack";
+
     }
 
     // Events that can be triggered on incoming messages. These are the events
@@ -144,6 +154,10 @@ machine(MachineType:L1Cache, "MSI cache")
 
         // Special internally triggered event to simplify implementation
         LastInvAck,     desc="Triggered after the last ack is received";
+
+        // COUP message
+        CoUp,            desc="Commutative update from CPU";
+
     }
 
     // A structure for the cache entry. This stores the cache data and state
@@ -155,6 +169,7 @@ machine(MachineType:L1Cache, "MSI cache")
     structure(Entry, desc="Cache entry", interface="AbstractCacheEntry") {
         State CacheState,        desc="cache state";
         DataBlock DataBlk,       desc="Data in the block";
+        int buffered_update_val,   desc="Accumulated CoUp value";
     }
 
     // TBE is the "transaction buffer entry". This stores information needed
@@ -436,6 +451,9 @@ machine(MachineType:L1Cache, "MSI cache")
                     } else if (in_msg.Type == RubyRequestType:ST) {
                         trigger(Event:Store, in_msg.LineAddress, cache_entry,
                                 tbe);
+                    } else if (in_msg.Type == RubyRequestType:CoUp) {
+                        trigger(Event:CoUp, in_msg.LineAddress, cache_entry, 
+                                tbe);
                     } else {
                         error("Unexpected type from processor");
                     }
@@ -687,6 +705,43 @@ machine(MachineType:L1Cache, "MSI cache")
         // z_stall stalls everything in the queue behind this request.
     }
 
+    // COUP actions
+
+    action(sendCoUp, "sC", desc="Send CoUp request to directory") {
+        CoUpRequests++;
+        peek(mandatory_in, RubyRequest) {
+            enqueue(request_out, RequestMsg, 1) {
+                out_msg.addr := address;
+                out_msg.Type := CoherenceRequestType:CoUp;
+                out_msg.Requestor := machineID;
+                out_msg.Destination.add(mapAddressToMachine(address, MachineType:Directory));
+                out_msg.MessageSize := MessageSizeType:Control;
+
+                // Pass along the commutative update value from the CPU
+                out_msg.IntData := 1; // Carries the commutative update value
+            }
+        }
+    }
+
+    action(bufferUpdate, "bU", desc="Buffer CoUp value locally") {
+        BufferedUpdates++;
+        peek(mandatory_in, RubyRequest) {
+            cache_entry.buffered_update_val := cache_entry.buffered_update_val + 1;
+        }
+    }
+
+    action(sendPartialReduce, "rU", desc="Send partial reduction to directory") {
+        PartialReducesSent++;
+        enqueue(response_out, ResponseMsg, 1) {
+            out_msg.addr := address;
+            out_msg.Type := CoherenceResponseType:PartialReduce;
+            out_msg.Sender := machineID;
+            out_msg.Destination.add(mapAddressToMachine(address, MachineType:Directory));
+            out_msg.IntData := 1;
+        }
+    }
+
+
 
     /*************************************************************************/
     // These are the transition definition. These are simply each cell in the
@@ -846,6 +901,24 @@ machine(MachineType:L1Cache, "MSI cache")
     transition(SI_A, Inv, II_A) {
         sendInvAcktoReq;
         popForwardQueue;
+    }
+
+    // COUP transitions
+
+    transition(I, CoUp, IU_D) {
+        allocateCacheBlock;
+        allocateTBE;
+        sendCoUp;
+        popMandatoryQueue;
+    }
+
+    transition(U, CoUp) {
+        bufferUpdate;
+        popMandatoryQueue;
+    }
+
+    transition(U, Replacement, IU_A) {
+        sendPartialReduce;
     }
 
 }
