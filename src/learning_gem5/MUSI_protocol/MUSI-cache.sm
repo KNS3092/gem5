@@ -708,7 +708,6 @@ machine(MachineType:L1Cache, "MUSI cache")
     // COUP actions
 
     action(sendCoUp, "sC", desc="Send CoUp request to directory") {
-        CoUpRequests++;
         peek(mandatory_in, RubyRequest) {
             enqueue(request_out, RequestMsg, 1) {
                 out_msg.addr := address;
@@ -724,14 +723,12 @@ machine(MachineType:L1Cache, "MUSI cache")
     }
 
     action(bufferUpdate, "bU", desc="Buffer CoUp value locally") {
-        BufferedUpdates++;
         peek(mandatory_in, RubyRequest) {
             cache_entry.buffered_update_val := cache_entry.buffered_update_val + 1;
         }
     }
 
     action(sendPartialReduce, "rU", desc="Send partial reduction to directory") {
-        PartialReducesSent++;
         enqueue(response_out, ResponseMsg, 1) {
             out_msg.addr := address;
             out_msg.Type := CoherenceResponseType:PartialReduce;
