@@ -41,7 +41,7 @@
  */
 
 /// Declare a machine with type L1Cache.
-machine(MachineType:L1Cache, "MUSI cache")
+machine(MachineType:L1Cache, "MSI cache")
     : Sequencer *sequencer; // Incoming request from CPU come from this
       CacheMemory *cacheMemory; // This stores the data and cache states
       bool send_evictions; // Needed to support O3 CPU and mwait
@@ -70,7 +70,6 @@ machine(MachineType:L1Cache, "MUSI cache")
 
       // This is all of the incoming requests from the core via the sequencer
       MessageBuffer * mandatoryQueue;
-
 {
     // Declare the states that this cache will use. These are both stable
     // states (no underscore) and transient states (with underscore). Letters
@@ -81,6 +80,7 @@ machine(MachineType:L1Cache, "MUSI cache")
     // have read-only or read-write permission. For functional writes, all
     // blocks are updated with new data if they have busy, read-only, or
     // read-write permission.
+
     state_declaration(State, desc="Cache states") {
         I,      AccessPermission:Invalid,
                     desc="Not present/Invalid";
@@ -113,15 +113,9 @@ machine(MachineType:L1Cache, "MUSI cache")
         II_A,   AccessPermission:Invalid,
                     desc="Sent valid data before receiving put ack. ";
                          //"Waiting for put ack.";
-        
-        // States for COUP 
-        U,      AccessPermission:Read_Only,
-                    desc="Update-only state. Cache holds commutative updates";
-        IU_D,   AccessPermission:Busy,
-                    desc="Invalid → Update. Waiting for CUP response";
-        IU_A,   AccessPermission:Busy,
-                    desc="Evicting update-only block, waiting for ack";
 
+        U,      AccessPermission:Read_Only,   
+                    desc="Update-only (COUP)";
     }
 
     // Events that can be triggered on incoming messages. These are the events
@@ -130,6 +124,7 @@ machine(MachineType:L1Cache, "MUSI cache")
         // From the processor/sequencer/mandatory queue
         Load,           desc="Load from processor";
         Store,          desc="Store from processor";
+        CoUp,           desc="Commutative update from processor (COUP)";
 
         // Internal event (only triggered from processor requests)
         Replacement,    desc="Triggered when block is chosen as victim";
@@ -147,6 +142,10 @@ machine(MachineType:L1Cache, "MUSI cache")
         // Responses from directory
         DataDirNoAcks,  desc="Data from directory (acks = 0)";
         DataDirAcks,    desc="Data from directory (acks > 0)";
+        FullReduce,     desc="Directory triggers full reduction from U sharers";
+        DowngradeToU,   desc="Downgrade from M to U for COUP";
+
+
 
         // Responses from other caches
         DataOwner,      desc="Data from owner";
@@ -155,10 +154,9 @@ machine(MachineType:L1Cache, "MUSI cache")
         // Special internally triggered event to simplify implementation
         LastInvAck,     desc="Triggered after the last ack is received";
 
-        // COUP message
-        CoUp,            desc="Commutative update from CPU";
 
     }
+
 
     // A structure for the cache entry. This stores the cache data and state
     // as defined above. You can put any other information here you like.
@@ -169,7 +167,6 @@ machine(MachineType:L1Cache, "MUSI cache")
     structure(Entry, desc="Cache entry", interface="AbstractCacheEntry") {
         State CacheState,        desc="cache state";
         DataBlock DataBlk,       desc="Data in the block";
-        int buffered_update_val,   desc="Accumulated CoUp value";
     }
 
     // TBE is the "transaction buffer entry". This stores information needed
@@ -451,9 +448,6 @@ machine(MachineType:L1Cache, "MUSI cache")
                     } else if (in_msg.Type == RubyRequestType:ST) {
                         trigger(Event:Store, in_msg.LineAddress, cache_entry,
                                 tbe);
-                    } else if (in_msg.Type == RubyRequestType:CoUp) {
-                        trigger(Event:CoUp, in_msg.LineAddress, cache_entry, 
-                                tbe);
                     } else {
                         error("Unexpected type from processor");
                     }
@@ -706,38 +700,43 @@ machine(MachineType:L1Cache, "MUSI cache")
     }
 
     // COUP actions
-
-    action(sendCoUp, "sC", desc="Send CoUp request to directory") {
-        peek(mandatory_in, RubyRequest) {
-            enqueue(request_out, RequestMsg, 1) {
-                out_msg.addr := address;
-                out_msg.Type := CoherenceRequestType:CoUp;
-                out_msg.Requestor := machineID;
-                out_msg.Destination.add(mapAddressToMachine(address, MachineType:Directory));
-                out_msg.MessageSize := MessageSizeType:Control;
-
-                // Pass along the commutative update value from the CPU
-                out_msg.IntData := 1; // Carries the commutative update value
-            }
-        }
-    }
-
-    action(bufferUpdate, "bU", desc="Buffer CoUp value locally") {
-        peek(mandatory_in, RubyRequest) {
-            cache_entry.buffered_update_val := cache_entry.buffered_update_val + 1;
-        }
-    }
-
-    action(sendPartialReduce, "rU", desc="Send partial reduction to directory") {
-        enqueue(response_out, ResponseMsg, 1) {
+    action(sendGetU, "gU", desc="Send GetU (CoUpRequest) to directory") {
+        enqueue(request_out, RequestMsg, 1) {
             out_msg.addr := address;
-            out_msg.Type := CoherenceResponseType:PartialReduce;
-            out_msg.Sender := machineID;
-            out_msg.Destination.add(mapAddressToMachine(address, MachineType:Directory));
-            out_msg.IntData := 1;
+            out_msg.Type := CoherenceRequestType:GetU;
+            out_msg.Destination.add(mapAddressToMachine(address,
+                                    MachineType:Directory));
+            out_msg.MessageSize := MessageSizeType:Control;
+            out_msg.Requestor := machineID;
         }
     }
 
+    action(sendPartialReduceToDir, "pr", desc="Send partial update to directory") {
+        enqueue(request_out, RequestMsg, 1) {
+            out_msg.addr := address;
+            out_msg.Type := CoherenceRequestType:PartialReduce;
+            out_msg.Destination.add(mapAddressToMachine(address,
+                                    MachineType:Directory));
+            out_msg.DataBlk := cache_entry.DataBlk;
+            out_msg.MessageSize := MessageSizeType:Data;
+            out_msg.Requestor := machineID;
+        }
+    }
+
+    action(sendFullReduceToDir, "fr", desc="Request full reduction from directory") {
+        enqueue(request_out, RequestMsg, 1) {
+            out_msg.addr := address;
+            out_msg.Type := CoherenceRequestType:FullReduce;
+            out_msg.Destination.add(mapAddressToMachine(address,
+                                    MachineType:Directory));
+            out_msg.MessageSize := MessageSizeType:Control;
+            out_msg.Requestor := machineID;
+        }
+    }
+
+    action(performLocalUpdate, "Perform COUP update locally") {
+    // Abstract commutative update — no-op unless timing modeled.
+    }   
 
 
     /*************************************************************************/
@@ -901,21 +900,47 @@ machine(MachineType:L1Cache, "MUSI cache")
     }
 
     // COUP transitions
-
-    transition(I, CoUp, IU_D) {
-        allocateCacheBlock;
+    transition(I, CoUp, U) {
         allocateTBE;
-        sendCoUp;
+        sendGetU;
+        popMandatoryQueue;
+    }
+
+    transition(S, CoUp, U) {
+        allocateTBE;
+        sendGetU;
+        popMandatoryQueue;
+    }
+
+    transition(M, CoUp) {
+        performLocalUpdate;
         popMandatoryQueue;
     }
 
     transition(U, CoUp) {
-        bufferUpdate;
+        performLocalUpdate;
         popMandatoryQueue;
     }
 
-    transition(U, Replacement, IU_A) {
-        sendPartialReduce;
+    transition(M, DowngradeToU, U) {
+        sendPartialReduceToDir;
+        deallocateCacheBlock;
+        popForwardQueue;
+    }
+
+    transition(U, Replacement, I) {
+        sendPartialReduceToDir;
+    }
+
+    transition(U, Load, I) {
+        sendFullReduceToDir;
+        popMandatoryQueue;
+    }
+
+    transition(U, FullReduce, I) {
+        sendPartialReduceToDir;
+        deallocateCacheBlock;
+        popForwardQueue;
     }
 
 }

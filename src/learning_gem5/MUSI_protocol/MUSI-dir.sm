@@ -79,7 +79,6 @@ machine(MachineType:Directory, "Directory protocol")
 
     // Special buffer for memory responses. Kind of like the mandatory queue
     MessageBuffer *responseFromMemory;
-
 {
     // For many things in SLICC you can specify a default. However, this
     // default must use the C++ name (mangled SLICC name). For the state below
@@ -103,6 +102,10 @@ machine(MachineType:Directory, "Directory protocol")
         // Waiting for write-ack from memory
         MI_m, AccessPermission:Busy,       desc="Moving to I waiting for ack";
         SS_m, AccessPermission:Busy,       desc="Moving to S waiting for ack";
+
+        // COUP state
+        U,    AccessPermission:Read_Only,  desc="One or more caches have update-only access";
+
     }
 
     enumeration(Event, desc="Directory events") {
@@ -123,8 +126,11 @@ machine(MachineType:Directory, "Directory protocol")
         MemData,      desc="Data from memory";
         MemAck,       desc="Ack from memory that write is complete";
 
-        // COUP additions
-        PartialReduce, desc="Apply update from U-state eviction";
+        // COUP event
+        GetU,         desc="Request for update-only access (COUP)";
+        PartialReduce, desc="Evicted partial update from a cache in U";
+
+
     }
 
     // NOTE: We use a netdest for the sharers and the owner so we can simply
@@ -175,6 +181,9 @@ machine(MachineType:Directory, "Directory protocol")
             if (state == State:I)  {
                 assert(getDirectoryEntry(addr).Owner.count() == 0);
                 assert(getDirectoryEntry(addr).Sharers.count() == 0);
+            }
+            if (state == State:U) {
+                assert(getDirectoryEntry(addr).Owner.count() >= 1);
             }
         }
     }
@@ -236,8 +245,6 @@ machine(MachineType:Directory, "Directory protocol")
             peek(response_in, ResponseMsg) {
                 if (in_msg.Type == CoherenceResponseType:Data) {
                     trigger(Event:Data, in_msg.addr);
-                } else if (in_msg.Type == CoherenceResponseType:PartialReduce) {
-                    trigger(Event:PartialReduce, in_msg.addr);
                 } else {
                     error("Unexpected message type.");
                 }
@@ -256,6 +263,8 @@ machine(MachineType:Directory, "Directory protocol")
                     trigger(Event:GetS, in_msg.addr);
                 } else if (in_msg.Type == CoherenceRequestType:GetM) {
                     trigger(Event:GetM, in_msg.addr);
+                } else if (in_msg.Type == CoherenceRequestType:GetU) {
+                    trigger(Event:GetU, in_msg.addr);
                 } else if (in_msg.Type == CoherenceRequestType:PutS) {
                     assert(is_valid(entry));
                     // If there is only a single sharer (i.e., the requestor)
@@ -272,6 +281,10 @@ machine(MachineType:Directory, "Directory protocol")
                     } else {
                         trigger(Event:PutMNonOwner, in_msg.addr);
                     }
+                } else if (in_msg.Type == CoherenceRequestType:GetU) {
+                    trigger(Event:GetU, in_msg.addr);
+                } else if (in_msg.Type == CoherenceRequestType:PartialReduce) {
+                    trigger(Event:PartialReduce, in_msg.addr);
                 } else {
                     error("Unexpected message type.");
                 }
@@ -461,6 +474,49 @@ machine(MachineType:Directory, "Directory protocol")
         // Do nothing.
     }
 
+    // COUP actions
+    action(sendFullReduceToUSharers, "fR", desc="Trigger full reduction from U sharers") {
+        peek(request_in, RequestMsg) {
+            enqueue(forward_out, RequestMsg, 1) {
+                out_msg.addr := address;
+                out_msg.Type := CoherenceRequestType:FullReduce;
+                out_msg.Requestor := in_msg.Requestor;
+                out_msg.Destination := getDirectoryEntry(address).Owner;
+                out_msg.MessageSize := MessageSizeType:Control;
+            }
+        }
+    }
+
+    action(sendDowngradeToU, "dU", desc="Send DowngradeToU to M holder") {
+        peek(request_in, RequestMsg) {
+            enqueue(forward_out, RequestMsg, 1) {
+                out_msg.addr := address;
+                out_msg.Type := CoherenceRequestType:DowngradeToU;
+                out_msg.Requestor := in_msg.Requestor;
+                out_msg.Destination := getDirectoryEntry(address).Owner;
+                out_msg.MessageSize := MessageSizeType:Control;
+            }
+        }
+    }
+
+    action(setDirStateU, "sU", desc="Set directory state to U") {
+        getDirectoryEntry(address).DirState := State:U;
+    }
+
+    action(writePartialReduceToMem, "wU", desc="Write PartialReduce data to memory") {
+        peek(request_in, RequestMsg) {
+            enqueue(memQueue_out, MemoryMsg, toMemLatency) {
+                out_msg.addr := address;
+                out_msg.Type := MemoryRequestType:MEMORY_WB;
+                out_msg.Sender := in_msg.Requestor;
+                out_msg.MessageSize := MessageSizeType:Writeback_Data;
+                out_msg.DataBlk := in_msg.DataBlk;
+                out_msg.Len := 0;
+            }
+        }
+    }
+
+
 
     /*************************************************************************/
     // transitions
@@ -570,10 +626,33 @@ machine(MachineType:Directory, "Directory protocol")
     }
 
     // COUP transitions
-    transition({S, M}, PartialReduce) {
-    // Eventually, we might want to merge IntData into memory or directory.
-    // For now, we'll just pop the queue.
-        popResponseQueue;
+
+    transition(I, GetU, M_m) {
+        sendMemRead;
+        setOwner;
+        setDirStateU;
+        popRequestQueue;
     }
 
+    transition(S, GetU, M_m) {
+        sendMemRead;
+        sendInvToSharers;
+        clearSharers;
+        setOwner;
+        setDirStateU;
+        popRequestQueue;
+    }
+
+    transition(M, GetU) {
+        sendDowngradeToU;
+        clearOwner;
+        setOwner;
+        setDirStateU;
+        popRequestQueue;
+    }
+
+    transition(U, PartialReduce) {
+        writePartialReduceToMem;
+        popRequestQueue;
+    }
 }
