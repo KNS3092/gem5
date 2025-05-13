@@ -1,3 +1,60 @@
+# O3CPU Power Model for gem5
+
+This repository contains a power modeling framework for the O3CPU in the [gem5 simulator](https://www.gem5.org/). It parses simulation statistics, integrates activation energy data from McPAT and CACTI, and reports per-component and per-pipeline-stage power breakdowns.
+
+## 🚀 Project Overview
+
+The goal of this project is to extend the gem5 simulation platform with a detailed and realistic **power model for the O3CPU**, enabling researchers to evaluate **power-performance tradeoffs** and analyze energy consumption trends across workloads.
+
+Unlike the existing power model for MinorCPU, this project targets the **more complex O3CPU**, which features dynamic scheduling, speculation, and deeper pipelines.
+
+## 🧱 Core Features
+
+- **Hierarchy-based power modeling** based on gem5's O3CPU pipeline stages
+- **Stat parsing** from gem5 simulation outputs
+- **Component-level energy modeling** using McPAT and CACTI
+- **Workload segmentation support** using `m5_dump_reset_stats()`
+- **Python implementation** for flexible analysis and reporting
+
+## 📊 Power Estimation Flow
+
+1. **Extract component activity counts** from gem5 stats
+2. **Multiply by per-activation energy values** from McPAT/CACTI
+3. **Divide by simulation time** to get power (Watts)
+4. **Group results** by pipeline stages and components
+5. **Plot and analyze** power trends across workloads
+
+## 🧪 Workloads Tested
+
+| Workload        | Power (W) |
+|------------------|------------|
+| DAXPY            | 1.54       |
+| SAXPY            | 1.47       |
+| IAX              | 3.71       |
+| Sieve            | 3.35       |
+| Random Branches  | 4.09       |
+
+Trends matched expectations — integer-heavy workloads showed higher branch predictor power; random branch behavior caused high fetch-stage power.
+
+### 📉 Known Limitations
+
+- **Static power is not modeled** — only dynamic power based on activation energy is considered.
+- **SIMD/vector instructions are not included**, as McPAT lacks support and gem5 stats lack the granularity to distinguish them.
+- **Average power only** — the model reports mean power over the simulation or region; no peak or temporal granularity.
+- **McPAT cannot distinguish between single (float) and double precision (double) operations**, leading to identical power estimates for workloads with different precision levels.
+- **External toolchain** — the power model is implemented as a standalone Python script and not integrated directly into gem5, making automation less seamless.
+
+
+## 👥 Contributors
+
+- Kaushik Shroff  
+- Ian Hogenkamp
+
+Spring 2025 — University of Wisconsin–Madison  
+Course: Advanced Computer Architecture (ECE 752)
+
+
+
 # The gem5 Simulator
 
 This is the repository for the gem5 simulator. It contains the full source code
