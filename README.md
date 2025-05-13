@@ -50,8 +50,8 @@ Trends matched expectations — integer-heavy workloads showed higher branch pre
 - Kaushik Shroff  
 - Ian Hogenkamp
 
-Spring 2025 — University of Wisconsin–Madison  
-Course: Advanced Computer Architecture (ECE 752)
+Fall 2024 — University of Wisconsin–Madison  
+Course: Advanced Computer Architecture 1 (ECE 752)
 
 
 
