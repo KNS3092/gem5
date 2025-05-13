@@ -52,7 +52,7 @@ These observations underscore the importance of **stimulus quality** in coherenc
 - **Darshan GK**
 
 Spring 2025 — University of Wisconsin–Madison  
-Course: ECE 757 – Advanced Multiprocessor Architecture
+Course: Advanced Computer Architecture 2 (ECE 757)
 
 
 
