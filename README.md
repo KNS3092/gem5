@@ -1,3 +1,77 @@
+# COUP Protocol Implementation in gem5
+
+This repository implements the **COUP (Commutativity-based Update Protocol)** in the gem5 architectural simulator. It extends the MSI protocol to a MUSI (Modified–Update–Shared–Invalid) variant by introducing a new **Update (U)** coherence state. This enables private caches to coalesce commutative updates locally, reducing invalidations and coherence traffic.
+
+## 🧠 Background
+
+COUP is designed to optimize workloads with **commutative operations** (e.g., addition, bitwise OR) by relaxing traditional cache coherence rules. Instead of acquiring exclusive access, caches can temporarily hold update-only access (U) and aggregate results until a read occurs.
+
+Traditional MSI-based protocols serialize such operations, while COUP allows greater concurrency and less traffic.
+
+## 🧱 Key Modifications to gem5
+
+- **New protocol messages**:
+  - `GetU`, `DowngradeToU`, `PartialReduce`, `FullReduce`
+- **New cache state**:
+  - `U` (Update-only)
+- **Modified state machines**:
+  - `MUSI-cache.sm`, `MUSI-dir.sm`, and `MUSI-msg.sm`
+- **New transitions** in both cache and directory controllers to support U state behavior.
+
+## 🧪 Evaluation Challenges
+
+Despite a successful build and integration:
+- Expected U-state transitions were **not observed** in microbenchmark traces.
+- Workloads did **not generate sufficient coherence events** to trigger COUP-specific behavior.
+- Integration of SPLASH-2 workloads was limited by syscall issues in SE mode.
+
+These observations underscore the importance of **stimulus quality** in coherence protocol validation and the need for carefully crafted microbenchmarks.
+
+## 📊 Protocol Overview
+
+| From State | Event              | To State | Description                             |
+|------------|--------------------|----------|-----------------------------------------|
+| `I`        | `CoUp`             | `U`      | Request update-only access              |
+| `S`        | `CoUp`             | `U`      | Upgrade shared line to update-only      |
+| `U`        | `CoUp`             | `U`      | Perform local update silently           |
+| `M`        | `CoUp`             | `M`      | Perform update without changing state   |
+| `M`        | `DowngradeToU`     | `U`      | Downgrade from exclusive to update-only |
+| `U`        | `Replacement`      | `I`      | Send partial reduction on eviction      |
+| `U`        | `Load`             | `I`      | Trigger full reduction on remote read   |
+
+## 🔍 Future Work
+
+- **Better workload design** to elicit U-state transitions (e.g., multithreaded counters, histograms with barriers).
+- **Multi-level cache integration**, including hierarchical reductions as proposed in the original COUP paper.
+- **DRAM-level reduction modeling** and its effect on latency/traffic.
+- **Expanded stats and debug tracing** for protocol validation.
+
+## 👥 Contributors
+
+- **Kaushik Shroff**
+- **Darshan GK**
+
+Spring 2025 — University of Wisconsin–Madison  
+Course: ECE 757 – Advanced Multiprocessor Architecture
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # The gem5 Simulator
 
 This is the repository for the gem5 simulator. It contains the full source code
